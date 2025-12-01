@@ -10,7 +10,6 @@ const port = process.env.PORT || 3000;
 
 // Se o seu site está na pasta acima, ok — mas verifique no Render qual é a "Publish Directory"
 // geralmente usa-se: path.join(_dirname, 'public') ou path.join(_dirname, '..', 'public')
-app.use(express.static(path.join(__dirname, '..')));
 
 // Middlewares
 app.use(cors());
@@ -70,19 +69,19 @@ app.post('/produtos', async (req, res) => {
 // Rota PUT para editar produto
 app.put('/produtos/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, preco, descricao } = req.body;
+  const { nome, preco, descricao, imagem } = req.body;
 
   try {
     const resultado = await db.query(
-      'UPDATE produtos SET nome = $1, preco = $2, descricao = $3 WHERE id = $4 RETURNING *',
-      [nome, preco, descricao, id]
+      'UPDATE produtos SET nome = $1, preco = $2, descricao = $3, imagem = $4 WHERE id = $5 RETURNING *',
+      [nome, preco, descricao, imagem, id]
     );
 
     if (resultado.rowCount === 0) {
       return res.status(404).json({ erro: 'Produto não encontrado' });
     }
 
-    res.status(200).json(resultado.rows[0]);
+    res.json(resultado.rows[0]);
   } catch (error) {
     console.error('Erro ao editar produto:', error);
     res.status(500).json({ erro: 'Erro ao editar produto' });
